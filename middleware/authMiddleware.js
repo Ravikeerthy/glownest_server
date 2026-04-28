@@ -4,7 +4,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => {
   let token;
 
   try {
@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
     ) {
       token = req.headers.authorization.split(" ")[1];
 
-      const decoded = jwt.verify(token, process.env.SECRET_KEY);
+            const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
       req.user = await User.findById(decoded.id).select("-password");
 
@@ -28,8 +28,14 @@ const protect = async (req, res, next) => {
     }
   } catch (error) {
     console.error("Auth middleware error:", error.message);
-    return res.status(401).json({ message: "Not authorized, token failed" });
+    return res.status(401).json({ message: "Not authorized, token failed", error: error.message, });
   }
 };
 
-export default protect;
+export const adminOnly = (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
+    next();
+  } else {
+    res.status(403).json({ message: "Access denied. Admin only." });
+  }
+};

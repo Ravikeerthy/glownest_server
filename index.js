@@ -7,6 +7,8 @@ import dotenv from "dotenv"
 import dbConnection from "./database/dbConfig.js";
 import productRoutes from "./routers/productRoutes.js"
 import authRoutes from "./routers/authRoutes.js"
+import orderRoutes from "./routers/orderRoutes.js"
+import paymentRoutes from "./routers/paymentRoutes.js"
 
 dotenv.config()
 dbConnection();
@@ -24,7 +26,8 @@ app.get("/", (req,res)=>{
 
 app.use("/api/products", productRoutes)
 app.use("/api/auth", authRoutes)
-
+app.use("/api/orders", orderRoutes)
+app.use("/api/payments", paymentRoutes)
 
 app.listen(PORT, ()=>{
    console.log(`App is lisenting from the ${PORT}`);

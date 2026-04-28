@@ -1,13 +1,13 @@
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 // Generate token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.SECRET_KEY , {
+  return jwt.sign({ id }, process.env.SECRET_KEY, {
     expiresIn: process.env.JWT_EXPIRE,
   });
 };
@@ -15,9 +15,8 @@ const generateToken = (id) => {
 // Register
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
     // console.log("Req.Body: ", req.body);
-    
 
     const userExists = await User.findOne({ email });
 
@@ -31,20 +30,21 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
+      role: role || "user"
     });
 
     // console.log("Registered: ", user);
-    
+
     res.status(201).json({
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
     });
   } catch (error) {
     res.status(500).json({ message: "Register failed" });
     // console.log("Error: ", error);
-    
   }
 };
 
@@ -78,6 +78,7 @@ export const loginUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role,
       token: generateToken(user._id),
     });
   } catch (error) {
