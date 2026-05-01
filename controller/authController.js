@@ -154,6 +154,7 @@ export const forgotPassword = async (req, res) => {
       host: "smtp.gmail.com",
       port: 587,
       secure: false,
+      requireTLS: true,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
@@ -165,6 +166,9 @@ export const forgotPassword = async (req, res) => {
     console.log("EMAIL_USER:", process.env.EMAIL_USER);
     console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
     console.log("CLIENT_URL:", process.env.CLIENT_URL);
+
+    await transporter.verify();
+    console.log("SMTP ready");
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
