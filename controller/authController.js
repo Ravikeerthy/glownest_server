@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
 
-
 dotenv.config();
 
 // Generate token
@@ -33,7 +32,7 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: role || "user"
+      role: role || "user",
     });
 
     // console.log("Registered: ", user);
@@ -88,7 +87,6 @@ export const loginUser = async (req, res) => {
     res.status(500).json({ message: "Login failed" });
   }
 };
-
 
 // Forget Password
 // export const forgotPassword = async (req, res) => {
@@ -158,7 +156,13 @@ export const forgotPassword = async (req, res) => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
     });
+    console.log("EMAIL_USER:", process.env.EMAIL_USER);
+    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
+    console.log("CLIENT_URL:", process.env.CLIENT_URL);
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
@@ -174,6 +178,7 @@ export const forgotPassword = async (req, res) => {
 
     res.json({ message: "Password reset link sent to email" });
   } catch (error) {
+    console.log("Forgot password error:", error.message);
     res.status(500).json({ message: "Something went wrong" });
   }
 };
