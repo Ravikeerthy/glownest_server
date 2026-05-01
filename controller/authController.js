@@ -7,6 +7,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import crypto from "crypto";
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 dotenv.config();
 
@@ -153,29 +154,10 @@ export const forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
 
-    const transporter = nodemailer.createTransport({
-      host: "smtp.gmail.com",
-      port: 587,
-      secure: false,
-      requireTLS: true,
-      family: 4,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    });
-    console.log("EMAIL_USER:", process.env.EMAIL_USER);
-    console.log("EMAIL_PASS exists:", !!process.env.EMAIL_PASS);
-    console.log("CLIENT_URL:", process.env.CLIENT_URL);
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await transporter.verify();
-    console.log("SMTP ready");
-
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await resend.emails.send({
+      from: "onboarding@resend.dev",
       to: user.email,
       subject: "Password Reset Request",
       html: `
@@ -186,10 +168,12 @@ export const forgotPassword = async (req, res) => {
       `,
     });
 
-    res.json({ message: "Password reset link sent to email" });
+    res.status(200).json({
+      message: "Password reset link sent to email",
+    });
   } catch (error) {
     console.log("Forgot password error:", error.message);
-    res.status(500).json({ message: "Something went wrong" });
+    res.status(500).json({ message: error.message });
   }
 };
 
