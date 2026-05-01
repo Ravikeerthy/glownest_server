@@ -158,7 +158,6 @@ export const forgotPassword = async (req, res) => {
       port: 587,
       secure: false,
       requireTLS: true,
-      // service:"gmail",
       family: 4,
       auth: {
         user: process.env.EMAIL_USER,
