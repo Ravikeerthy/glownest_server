@@ -1,3 +1,6 @@
+import dns from "node:dns";
+
+dns.setDefaultResultOrder("ipv4first");
 import User from "../models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
@@ -155,6 +158,8 @@ export const forgotPassword = async (req, res) => {
       port: 587,
       secure: false,
       requireTLS: true,
+      // service:"gmail",
+      family: 4,
       auth: {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
