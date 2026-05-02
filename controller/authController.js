@@ -156,8 +156,8 @@ export const forgotPassword = async (req, res) => {
 
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    await resend.emails.send({
-      from: "GlowNest <noreply@yourdomain.com>",
+    const { data, error } = await resend.emails.send({
+      from: "GlowNest <onboarding@resend.dev>",
       to: user.email,
       subject: "Password Reset Request",
       html: `
@@ -167,6 +167,13 @@ export const forgotPassword = async (req, res) => {
         <p>This link will expire in 15 minutes.</p>
       `,
     });
+
+    if (error) {
+      console.log("Resend error:", error);
+      return res.status(500).json({ message: error.message });
+    }
+
+    console.log("Resend email sent:", data);
 
     res.status(200).json({
       message: "Password reset link sent to email",
